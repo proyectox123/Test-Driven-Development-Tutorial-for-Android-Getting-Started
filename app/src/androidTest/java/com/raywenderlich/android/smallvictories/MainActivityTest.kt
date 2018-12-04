@@ -33,15 +33,18 @@ package com.raywenderlich.android.smallvictories
 
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.*
+import android.support.test.espresso.assertion.ViewAssertions.doesNotExist
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.filters.LargeTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.instanceOf
+import org.hamcrest.Matcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -68,18 +71,20 @@ class MainActivityTest {
   @Test
   fun editingDialogUpdatesTitle() {
     onView(withId(R.id.textVictoryTitle))
-        .perform(click())
+            .perform(click())
 
     val newTitle = "Made the bed"
     onView(instanceOf(EditText::class.java))
-        .perform(clearText())
-        .perform(typeText(newTitle))
+            .perform(clearText())
+            .perform(typeText(newTitle))
 
     onView(withText(R.string.dialog_ok))
-        .perform(click())
+            .perform(click())
 
-    onView(allOf(withId(R.id.textVictoryTitle), withText(newTitle)))
-        .check(matches(isDisplayed()))
+    val first = withId(R.id.textVictoryTitle)
+    val second = withText(newTitle)
+    val viewMatcher = allOf(first, second)
+    onView(viewMatcher).check(matches(isDisplayed()))
   }
 
   @Test
@@ -102,5 +107,25 @@ class MainActivityTest {
     onView(allOf(withId(R.id.textVictoryCount),
             withText((previousCount + 1).toString())))
             .check(matches(isDisplayed()))
+  }
+
+  @Test
+  fun editingTitleDoesntChangeCount() {
+    // 1
+    onView(withId(R.id.fab))
+            .perform(click())
+    // 2
+    onView(withId(R.id.textVictoryTitle))
+            .perform(click())
+    val newTitle = "Made the bed"
+    onView(instanceOf(EditText::class.java))
+            .perform(clearText())
+            .perform(typeText(newTitle))
+    onView(withText(R.string.dialog_ok))
+            .perform(click())
+
+    // 3
+    onView(allOf(withId(R.id.textVictoryCount), withText("0")))
+            .check(doesNotExist())
   }
 }

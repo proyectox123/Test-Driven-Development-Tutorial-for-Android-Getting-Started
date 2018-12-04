@@ -90,7 +90,6 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-
   private fun showVictoryTitleDialog(viewModel: VictoryViewModel) {
     AlertDialog.Builder(this).apply {
       setTitle(getString(R.string.dialog_title))
